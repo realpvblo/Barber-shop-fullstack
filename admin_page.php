@@ -1,5 +1,5 @@
 <?php
-#komenatarzyk
+#komenatarzykfgh
 @include 'config.php';
 
 session_start();
