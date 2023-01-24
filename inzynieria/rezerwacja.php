@@ -54,9 +54,12 @@
     <option value="Mateusz">Mateusz</option>
   </select><br>
   <label for="date">Date:</label><br>
-  <input type="date" id="date" name="date" required><br>
-  <label for="time">Time:</label><br>
-  <input type="time" id="time" name="time" required><br>
+<input type="date" id="date" name="date" required min="<?php echo date("Y-m-d")?>" max="2024-12-31" onchange="checkDate()">
+<select id="godzina" name="godzina" required>
+  <option value ="10">10</option>
+  <option value ="11">11</option>
+    </select><br>
+
   <input type="submit" value="Make Reservation">
 </form>
 </body>
@@ -70,7 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $service = $_POST['service'];
   $fryzjerzy = $_POST['fryzjerzy'];
   $date = $_POST['date'];
-  $time = $_POST['time'];
+  $time = $_POST['godzina'];
+  
 
   // validate form data
   if (empty($name) || empty($email) || empty($phone) || empty($service) || empty($date) || empty($time) || empty($fryzjerzy)) {
@@ -91,7 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // insert reservation into database
+    
     $sql = "INSERT INTO rezerwacje (name, email, phone, service, date, time, fryzjerzy) VALUES ('$name', '$email', '$phone', '$service', '$date', '$time', '$fryzjerzy')";
+    $col_name = "time_$time";
+      $query = "INSERT INTO godziny_rezerwacji(email, data, $col_name)
+      VALUES ('$email','$date','$time')";
+      $result = mysqli_query($conn, $query);
+    
+   
+
 
     if (mysqli_query($conn, $sql)) {
       $success = "Reservation made successfully";
@@ -104,4 +116,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 
+
 ?>
+<script>
+  function checkDate(){
+    var selectedDate = new Date(document.getElementById("date").value);
+    var today = new Date();
+    if(selectedDate < today){
+      alert("You cannot select a date in the past!");
+      document.getElementById("date").value = "";
+    }
+  }
+</script>
+<script>
+  $( function() {
+    $( "#date" ).datepicker();
+  } );
+</script>
+

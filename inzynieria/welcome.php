@@ -6,7 +6,11 @@ session_start();
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
+    
 }
+$email = $_SESSION['email'];
+
+  
 ?>
  
 <!DOCTYPE html>
@@ -21,7 +25,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     </style>
 </head>
 <body>
-    <h1 class="my-5">Witamy na naszej stronie , <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>. Mamy nadzieję że dobrze będziesz się tu bawić.</h1>
+  
+    <h1 class="my-5">Witamy na naszej stronie , <b><?php echo htmlspecialchars($email); ?></b>. Mamy nadzieję że dobrze będziesz się tu bawić.</h1>
     <p>
         <a href="index.php" class = "btn btn-danger ml-3">Powrót</a>
    
@@ -157,26 +162,46 @@ setInterval(function() {
     <th>Time</th>
   </tr>
 </body>
-  <?php
-  // connect to database
-  $host = "localhost";
-  $user = "root";
-  $password = "";
-  $dbname = "projekt";
 
-  // create connection
-  $conn = mysqli_connect($host, $user, $password, $dbname);
+<?php
+// connect to database
+$host = "localhost";
+$user = "root";
+$password = "";
+$dbname = "projekt";
 
-  // check connection
-  if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+// create connection
+$conn = mysqli_connect($host, $user, $password, $dbname);
+
+// check connection
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+
+// Start session
+
+
+
+
+  // Get the user's information from the database
+  $query = "SELECT type FROM users WHERE email = '$email'";
+  $result = $conn->query($query);
+
+  // Fetch the user's data
+  $user = $result->fetch_assoc();
+
+  // Assign the type to a variable
+  $user_type = $user['type'];
+
+  // select all reservations from the database
+  if($user_type == "admin"){
+      $sql = "SELECT * FROM rezerwacje";
   }
-
-  // select all reservations from database
-  
-  $sql = "SELECT * FROM rezerwacje";
+  elseif($user_type == "user"){
+      $sql = "SELECT * FROM rezerwacje WHERE email = '$email'";
+  }
   $result = mysqli_query($conn, $sql);
-
+ 
   // output data of each row
   if (mysqli_num_rows($result) > 0) {
     while($row = mysqli_fetch_assoc($result)) {
@@ -189,19 +214,17 @@ setInterval(function() {
               <td>" . $row["fryzjerzy"]. "</td>
               <td>" . $row["date"]. "</td>
               <td>" . $row["time"]. "</td>
-
             </tr>";
-            
-              
     }
+    
   } else {
-    echo "0 results";
+    echo "Brak rezerwacji";
   }
 
-  // close connection
-  mysqli_close($conn);
+// close connection
+mysqli_close($conn);
+?>
 
-  ?>
 </table>
 <script>
             document.getElementById("view-reservations-button").addEventListener("click", function() {
