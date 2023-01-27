@@ -6,7 +6,7 @@
   // Connect to the database
   $host = 'localhost';
   $user = 'root';
-  $password = '';
+  $password = 'root';
   $dbname = 'projekt';
   $conn = mysqli_connect($host, $user, $password, $dbname);
   
@@ -82,22 +82,22 @@
 ?>
 
 <table id="reservations-table" style="display: none;">
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Phone</th>
-    <th>Service</th>
-    <th>Barber</th>
-    <th>Date</th>
-    <th>Time</th>
-  </tr>
-</body>
-  <?php
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Service</th>
+        <th>Barber</th>
+        <th>Date</th>
+        <th>Time</th>
+    </tr>
+    </body>
+    <?php
   // connect to database
   $host = "localhost";
   $user = "root";
-  $password = "";
+  $password = "root";
   $dbname = "projekt";
 
   // create connection
@@ -140,10 +140,11 @@
   ?>
 </table>
 <script>
-            document.getElementById("view-reservations-button").addEventListener("click", function() {
-                document.getElementById("reservations-table").style.display = "block";
-              });
-            </script>
+document.getElementById("view-reservations-button").addEventListener("click", function() {
+    document.getElementById("reservations-table").style.display = "block";
+});
+</script>
 </h2>
 </body>
+
 </html>

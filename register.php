@@ -1,136 +1,121 @@
 <?php
+// Connect to the database
+$db = new mysqli('localhost', 'root', 'root', 'projekt');
 
-require_once "config.php";
- 
-
-$username = $password = $confirm_password = "";
-$username_err = $password_err = $confirm_password_err = "";
- 
-
-if($_SERVER["REQUEST_METHOD"] == "POST"){
- 
-  
-    if(empty(trim($_POST["username"]))){
-        $username_err = "Please enter a username.";
-    } elseif(!preg_match('/^[a-zA-Z0-9_]+$/', trim($_POST["username"]))){
-        $username_err = "Username can only contain letters, numbers, and underscores.";
-    } else{
-    
-        $sql = "SELECT id FROM users WHERE username = ?";
-        
-        if($stmt = mysqli_prepare($link, $sql)){
-        
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
-            
-        
-            $param_username = trim($_POST["username"]);
-            
-          
-            if(mysqli_stmt_execute($stmt)){
-             
-                mysqli_stmt_store_result($stmt);
-                
-                if(mysqli_stmt_num_rows($stmt) == 1){
-                    $username_err = "This username is already taken.";
-                } else{
-                    $username = trim($_POST["username"]);
-                }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
-
-       
-            mysqli_stmt_close($stmt);
-        }
-    }
-    
-
-    if(empty(trim($_POST["password"]))){
-        $password_err = "Please enter a password.";     
-    } elseif(strlen(trim($_POST["password"])) < 6){
-        $password_err = "Password must have atleast 6 characters.";
-    } else{
-        $password = trim($_POST["password"]);
-    }
-    
-
-    if(empty(trim($_POST["confirm_password"]))){
-        $confirm_password_err = "Please confirm password.";     
-    } else{
-        $confirm_password = trim($_POST["confirm_password"]);
-        if(empty($password_err) && ($password != $confirm_password)){
-            $confirm_password_err = "Password did not match.";
-        }
-    }
-    
-
-    if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
-        
-     
-        $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-         
-        if($stmt = mysqli_prepare($link, $sql)){
-         
-            mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
-            
-         
-            $param_username = $username;
-            $param_password = password_hash($password, PASSWORD_DEFAULT); 
-            
-           
-            if(mysqli_stmt_execute($stmt)){
-              
-                header("location: login.php");
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
-
-            
-            mysqli_stmt_close($stmt);
-        }
-    }
-    
-  
-    mysqli_close($link);
+// Check for a successful connection
+if ($db->connect_error) {
+    die("Connection failed: " . $db->connect_error);
 }
+
+// Check if the form has been submitted
+if (isset($_POST['submit'])) {
+
+    // Get the form data
+    $email = $db->real_escape_string($_POST['email']);
+    $username = $db->real_escape_string($_POST['username']);
+    $password = $db->real_escape_string($_POST['password']);
+
+    // Insert the data into the database
+    $query = "INSERT INTO users (email, username,password) VALUES ('$email', '$username','$password')";
+    if ($db->query($query) === TRUE) {
+        echo "Registration successful!";
+        header("location: login.php");
+    } else {
+        echo "Error: " . $query . "<br>" . $db->error;
+    }
+}
+
 ?>
- 
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Zarejestruj się</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 360px; padding: 20px; }
-    </style>
+    <link rel="stylesheet" href="style-login.css">
+    <link rel="stylesheet" href="Bootstrap\css\styles.css">
+    <link rel="icon" type="image/x-icon" href="Bootstrap/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
 </head>
+
 <body>
+
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" id="mainNav">
+        <div class="container px-5">
+            <a class="aEraFreshLogo" href="index.php"><img class="eraFreshLogo"
+                    src="Bootstrap\assets\img\logoERAfresh.png" alt=""></a>
+            <a class="navbar-brand fw-bold" href="index.php">ERA Fresh</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Menu
+                <i class="bi-list"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
+                    <li class="nav-item"><a class="nav-link me-lg-3" href="login.php">Zaloguj się</a></li>
+                    <li class="nav-item"><a class="nav-link me-lg-3" href="register.php">Stwórz konto</a></li>
+                </ul>
+                <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" data-bs-toggle="modal"
+                    data-bs-target="#feedbackModal">
+                    <span class="d-flex align-items-center">
+                        <a href="rezerwacja.php">
+                        <i class="bi-chat-text-fill me-2"></i>
+                        <span class="small">Umów wizytę</span></a>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <div class="wrapper">
         <h2>Zarejestruj się</h2>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group">
-                <label>Login:</label>
-                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
-                <span class="invalid-feedback"><?php echo $username_err; ?></span>
-            </div>    
-            <div class="form-group">
-                <label>Hasło:</label>
-                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
-                <span class="invalid-feedback"><?php echo $password_err; ?></span>
-            </div>
-            <div class="form-group">
-                <label>Powtórz swoje hasło:</label>
-                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
-                <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Gotowe!">
-                <input type="reset" class="btn btn-secondary ml-2" value="Jeszcze raz">
-            </div>
-            <p>Jednak posiadasz konto? <a href="login.php">Zaloguj się!</a>.</p>
+        <!-- Formularz rejestracji -->
+        <form method="post" action="register.php">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" name="submit" value="Register">
         </form>
-    </div>    
+    </div>
+
+
+
+    <div class="container" id="container">
+        <div class="form-container sign-in-container">
+            <form method="post" action="register.php">
+                <h1>Zarejestruj się</h1>
+                <span>stwórz konto, aby móc korzystać z naszych usług</span>
+                <input type="text" id="username" name="username" placeholder="Imię" required>
+                <input type="email" id="email" name="email" placeholder="E-mail" required>
+                <input type="password" id="password" name="password" placeholder="Hasło" required>
+                <!-- <button> <input type="submit" name="submit" Zaloguj się ></button> -->
+                <input type="submit" name="submit" value="Stwórz konto">
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <!-- <div class="overlay-panel overlay-left">
+				<h1>Witaj ponownie!</h1>
+				<p>To keep connected with us please login with your personal info</p>
+				<button class="ghost" id="signIn">Sign In</button>
+			</div> -->
+                <div class="overlay-panel overlay-right">
+                    <h1>Masz już konto?</h1>
+                    <p>Wciśnij poniższy guzik i przejdź do strony logowania</p>
+                    <a href="login.php">
+                        <button class="ghost" id="signUp">Zaloguj się</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

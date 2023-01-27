@@ -11540,20 +11540,21 @@ footer a:hover, footer a:active, footer a:focus {
 }
 .masthead {
   /* background-color: #f8f9fa; */
-  background-image: url("../assets/img/header-saloon.jpg");  
+  /* background-image: url("../assets/img/header-saloon.jpg"); */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../assets/img/header-saloon.jpg");
   padding-top: 9.5rem;
   padding-bottom: 5rem;
   background-size: cover;
 }
-.masthead::before{
+/* .masthead::before{
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   background: rgba(0, 0, 0, 0.5);
-  height: 100%;
-}
+  height: inherit;
+} */
 .masthead h1{
   color: white;
 }
@@ -11673,7 +11674,7 @@ footer a:hover, footer a:active, footer a:focus {
 }
 
 #reservation-form input[type="submit"] {
-  background-color: #4CAF50;
+  background-color: #2937f0;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -11682,7 +11683,7 @@ footer a:hover, footer a:active, footer a:focus {
 }
 
 #reservation-form input[type="submit"]:hover {
-  background-color: #45a049;
+  background-color: #0000ff;
 }
 
 .button {
@@ -11740,7 +11741,6 @@ footer a:hover, footer a:active, footer a:focus {
 
 #current-time {
   font-size: 2rem;
-  margin-bottom: 2rem;
 }
 
 #view-reservations-button {
@@ -11752,13 +11752,6 @@ footer a:hover, footer a:active, footer a:focus {
 }
 
 #view-reservations
-
-body {
-  background-image: url('https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.0.3&ixid=mnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80&fbclid=IwAR3ridpkd3SJg01b6mUk0ylka86dD8rcTFYo8AjQmP-8mX5QZpfoBvDd39E');
-  background-size: cover;
-  background-repeat: no-repeat;
-  transform: scaleX(-1);
-}
 
 #calendar {
   width: 400px;
@@ -11783,4 +11776,20 @@ body {
 .red-button {
   background-color: red;
   color: white;
+}
+
+a {
+  color: white;
+  text-decoration: none; /* no underline */
+}
+a:hover {
+  color: white;
+  text-decoration: none; /* no underline */
+}
+#time{
+  margin-bottom: 0;
+}
+.nav-item{
+  display: flex;
+  align-items: center;
 }
